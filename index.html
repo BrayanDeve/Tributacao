@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificação de Tributação de Produtos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f9;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .product {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+
+        button {
+            background: #4CAF50;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e7f3fe;
+            border-left: 6px solid #2196F3;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="quiz-container">
+        <h2>Verificação de Tributação dos Produtos</h2>
+        <form id="quizForm"></form>
+        <button id="submitBtn">Enviar</button>
+        <div id="result" class="result" style="display:none;"></div>
+    </div>
+
+    <script>
+        // 1️⃣ Lista de produtos - futuramente substituível por API
+        // Exemplo de chamada API (comentada por enquanto):
+        /*
+        fetch('/api/produtos')
+          .then(response => response.json())
+          .then(data => {
+            renderProducts(data);
+          });
+        */
+
+        // Dados fictícios
+        const produtos = [
+            { id: 1, nome: "Produto A", tributacao: "ICMS 18%" },
+            { id: 2, nome: "Produto B", tributacao: "PIS/COFINS aplicáveis" },
+            { id: 3, nome: "Produto C", tributacao: "Sem substituição tributária" },
+            { id: 4, nome: "Produto D", tributacao: "Não isento de ICMS" },
+            { id: 5, nome: "Produto E", tributacao: "Tributado como mercadoria" }
+        ];
+
+        // 2️⃣ Renderiza produtos no formulário
+        function renderProducts(produtosList) {
+            const form = document.getElementById('quizForm');
+            form.innerHTML = '';
+            produtosList.forEach((p, i) => {
+                const div = document.createElement('div');
+                div.classList.add('product');
+                div.innerHTML = `
+      <strong>${p.nome}</strong> - <em>${p.tributacao}</em><br><br>
+      <label>
+        <input type="radio" name="p${i}" value="sim"> ✅ Sim
+      </label><br>
+      <label>
+        <input type="radio" name="p${i}" value="nao"> ❌ Não
+      </label><br>
+      <label>
+        <input type="radio" name="p${i}" value="nao_sei"> ❓ Não sei
+      </label>
+    `;
+                form.appendChild(div);
+            });
+        }
+
+        // Renderiza inicialmente com produtos fictícios
+        renderProducts(produtos);
+
+        // 3️⃣ Captura respostas
+        document.getElementById('submitBtn').addEventListener('click', () => {
+            const respostas = produtos.map((p, i) => {
+                const selected = document.querySelector(`input[name=p${i}]:checked`);
+                return {
+                    produtoId: p.id,
+                    produtoNome: p.nome,
+                    resposta: selected ? selected.value : null
+                };
+            });
+
+            // Exibe no console para integração
+            console.log("Respostas do cliente:", respostas);
+
+            // Mensagem de envio
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `<strong>Respostas enviadas. Confira o console para o JSON.</strong>`;
+
+            // Exemplo: enviar ao backend via API (descomentar e ajustar URL)
+            /*
+            fetch('/api/salvar-respostas', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ clienteId: 123, respostas: respostas })
+            })
+            .then(res => res.json())
+            .then(data => console.log("Salvo no sistema:", data));
+            */
+        });
+    </script>
+
+</body>
+
+</html>
